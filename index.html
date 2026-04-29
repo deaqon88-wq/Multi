@@ -8,12 +8,12 @@
   @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&family=Nunito:wght@400;700;800;900&display=swap');
 
   :root {
-    --yellow: #f7b456;
-    --red: #7f1b1b;
-    --blue: #264556;
-    --green: #619b78;
-    --orange: #FF8C00;
-    --purple: #ac85d0;
+    --yellow: hsl(53, 76%, 82%);
+    --red: #923434;
+    --blue: hwb(218 42% 6%);
+    --green: #a1f3c2;
+    --orange: #f7b769;
+    --purple: #dbc0f4;
     --bg: #FFF8E1;
     --dark: #1a1a2e;
     --panel-bg: #fff;
@@ -23,7 +23,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'Lucida', sans-serif;
+    font-family: 'Nunito', sans-serif;
     background: var(--bg);
     min-height: 100vh;
     overflow-x: hidden;
@@ -319,7 +319,7 @@
   }
 
   .quiz-question {
-    font-family: 'Lucida', cursive;
+    font-family: 'Bangers', cursive;
     font-size: 3.5rem;
     color: var(--dark);
     margin: 16px 0;
@@ -388,7 +388,7 @@
     margin: 16px 0;
   }
   .answer-btn {
-    font-family: 'Lucida', cursive;
+    font-family: 'Bangers', cursive;
     font-size: 2rem;
     padding: 16px;
     border: 3px solid var(--dark);
@@ -837,7 +837,7 @@
           <text x="105" y="22" font-size="16" fill="#FFE000">⚡</text>
         </svg>
       </div>
-      <div class="speech-bubble" id="quizBubble">À toi de jouer, Dresseur ! 🎯<br>Utilise la <strong>méthode des doigts pour calculer plus vite que la Team Rocket</strong> pour trouver la bonne réponse !</div>
+      <div class="speech-bubble" id="quizBubble">À toi de jouer, Dresseur ! 🎯<br>Utilise la <strong>méthode des doigts</strong> pour trouver la bonne réponse !</div>
     </div>
   </div>
 
@@ -879,7 +879,7 @@
     <div id="resultTitle" style="font-family:'Bangers',cursive;font-size:2.2rem;color:var(--dark);text-shadow:3px 3px 0 var(--yellow);letter-spacing:2px">BRAVO !</div>
     <div class="results-score" id="resultScore">22/25</div>
     <div class="results-stars" id="resultStars"></div>
-    <div class="results-msg" id="resultMsg">Super travail, Maître Pokemon !</div>
+    <div class="results-msg" id="resultMsg">Super travail, Dresseur !</div>
 
     <div style="margin-top:20px">
       <div id="wrongAnswersList" style="text-align:left;font-size:0.9rem;font-weight:700;color:#666;max-height:200px;overflow-y:auto;"></div>
@@ -1284,7 +1284,7 @@ let currentQ = 0;
 let score = 0;
 let wrongAnswers = [];
 let timerInterval = null;
-let timeLeft = 15;
+let timeLeft = 10;
 let answered = false;
 
 const quizMessages = {
@@ -1380,7 +1380,7 @@ function loadQuestion() {
 
 function startTimer(correct, a, b) {
   clearInterval(timerInterval);
-  timeLeft = 10;
+  timeLeft = 15;
   const circle = document.getElementById('timerCircle');
   const timerText = document.getElementById('timerText');
   const circumference = 283;
@@ -1392,7 +1392,7 @@ function startTimer(correct, a, b) {
   timerInterval = setInterval(() => {
     timeLeft--;
     timerText.textContent = timeLeft;
-    const offset = circumference * (1 - timeLeft / 10);
+    const offset = circumference * (1 - timeLeft / 15);
     circle.style.strokeDashoffset = offset;
 
     if (timeLeft <= 3) circle.style.stroke = 'var(--red)';
@@ -1458,7 +1458,7 @@ function showResults() {
   } else if (pct >= 0.5) {
     emoji = '💪'; title = 'BIEN JOUÉ !'; msg = 'Tu progresses bien ! Revois la méthode et réessaie !'; stars = 3;
   } else {
-    emoji = '📚'; title = 'CONTINUE !'; msg = 'La méthode des doigts va t\'aider. Relis la leçon et reviens dans l'arène!'; stars = 2;
+    emoji = '📚'; title = 'CONTINUE !'; msg = 'La méthode des doigts va t\'aider. Relis la leçon et reviens !'; stars = 2;
   }
 
   document.getElementById('resultEmoji').textContent = emoji;
