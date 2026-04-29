@@ -8,12 +8,12 @@
   @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&family=Nunito:wght@400;700;800;900&display=swap');
 
   :root {
-    --yellow: hsl(53, 76%, 82%);
-    --red: #923434;
-    --blue: hwb(218 42% 6%);
-    --green: #a1f3c2;
-    --orange: #f7b769;
-    --purple: #dbc0f4;
+    --yellow: #FFE000;
+    --red: #FF3B3B;
+    --blue: #1A6EFF;
+    --green: #00C851;
+    --orange: #FF8C00;
+    --purple: #9B30FF;
     --bg: #FFF8E1;
     --dark: #1a1a2e;
     --panel-bg: #fff;
@@ -1353,7 +1353,7 @@ function loadQuestion() {
 
   // Quiz bubble rotator
   const bubbles = [
-    `Allez, <strong>${a} × ${b}</strong> ! T'as 15 secondes ! ⏱️`,
+    `Allez, <strong>${a} × ${b}</strong> ! T'as 10 secondes ! ⏱️`,
     `<strong>${a} fois ${b}</strong>... utilise tes doigts ! 🤚`,
     `Montre-moi ce que tu vaux, Dresseur ! <strong>${a} × ${b}</strong> 💪`,
     `Facile pour un champion ! <strong>${a} × ${b}</strong> = ? ⚡`,
@@ -1380,7 +1380,7 @@ function loadQuestion() {
 
 function startTimer(correct, a, b) {
   clearInterval(timerInterval);
-  timeLeft = 15;
+  timeLeft = 10;
   const circle = document.getElementById('timerCircle');
   const timerText = document.getElementById('timerText');
   const circumference = 283;
@@ -1392,7 +1392,7 @@ function startTimer(correct, a, b) {
   timerInterval = setInterval(() => {
     timeLeft--;
     timerText.textContent = timeLeft;
-    const offset = circumference * (1 - timeLeft / 15);
+    const offset = circumference * (1 - timeLeft / 10);
     circle.style.strokeDashoffset = offset;
 
     if (timeLeft <= 3) circle.style.stroke = 'var(--red)';
