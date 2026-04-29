@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -908,7 +909,7 @@ const lessonSteps = [
     render: renderStep1
   },
   {
-    msg: `<strong>Étape 1 :</strong> Les doigts <strong>pliés (le doigt N + ceux vers l'auriculaire)</strong> s'additionnent sur les deux mains. Ça donne les <span class="highlight">dizaines</span> !`,
+    msg: `<strong>Étape 1 :</strong> Les doigts <strong>pliés</strong> (y compris le doigt plié) s'additionnent. Ça donne les <span class="highlight">dizaines</span> !`,
     render: renderStep2
   },
   {
@@ -999,8 +1000,8 @@ function renderStep1() {
   document.getElementById('methodVisual').innerHTML = `
     <div class="method-title">✋ 7 × 8 = ? LET'S GO !</div>
     <div style="text-align:center;margin-bottom:12px;font-weight:800;font-size:1rem;">
-      Plie l'<strong style="color:var(--red)">annulaire (= 7) + l'auriculaire</strong> sur la main gauche<br>
-      et le <strong style="color:var(--blue)">majeur (= 8) + annulaire + auriculaire</strong> sur la main droite
+      Plie le <strong style="color:var(--red)">doigt n°2 (= 7)</strong> sur la main gauche<br>
+      et le <strong style="color:var(--blue)">doigt n°3 (= 8)</strong> sur la main droite
     </div>
     <div class="hands-container">
       <div class="hand-box">
@@ -1027,19 +1028,19 @@ function renderStep2() {
     </div>
     <div class="hands-container">
       <div class="hand-box">
-        <label>Main G → <span style="color:var(--red)">2 doigts bas</span></label>
+        <label>Main G → <span style="color:var(--red)">2 doigts</span></label>
         ${handSVG('left', [6,7,8,9,10], [7], true)}
       </div>
       <div style="font-family:'Bangers',cursive;font-size:2rem;color:var(--dark);">+</div>
       <div class="hand-box">
-        <label>Main D → <span style="color:var(--red)">3 doigts bas</span></label>
+        <label>Main D → <span style="color:var(--red)">3 doigts</span></label>
         ${handSVG('right', [6,7,8,9,10], [8], true)}
       </div>
     </div>
     <div class="formula-row">
-      <div class="formula-box blue">2 bas</div>
+      <div class="formula-box blue">2 doigts</div>
       <span>+</span>
-      <div class="formula-box blue">3 bas</div>
+      <div class="formula-box blue">3 doigts</div>
       <span>=</span>
       <div class="formula-box">5 doigts</div>
       <span>→</span>
@@ -1092,7 +1093,7 @@ function renderStep4() {
     </div>
     <div class="tip-box" style="text-align:center">
       🔁 <strong>Résumé de la méthode :</strong><br>
-      1️⃣ Plie le doigt du nombre + tous ceux vers l'auriculaire sur chaque main<br>
+      1️⃣ Plie le doigt du nombre sur chaque main<br>
       2️⃣ Compte les doigts bas (des 2 mains) → ×10 = dizaines<br>
       3️⃣ Doigts levés main G × Doigts levés main D = unités<br>
       4️⃣ Dizaines + Unités = Résultat !
@@ -1127,13 +1128,11 @@ function renderStep5() {
 
 function showCalc(a, b, res) {
   // Calculate using finger method
-  // DOWN fingers = doigt N + tous vers auriculaire (≤ N) => count = N - 5
-  // UP  fingers = doigts vers le pouce (> N)             => count = 10 - N
-  const fingerA = a - 5; // doigts bas main G
-  const fingerB = b - 5; // doigts bas main D
+  const fingerA = a - 5; // doigts bas main G (inclus plié)
+  const fingerB = b - 5; // doigts bas main D (inclus plié)
   const totalDown = fingerA + fingerB;
-  const upA = 10 - a; // doigts levés main G (vers le pouce)
-  const upB = 10 - b; // doigts levés main D
+  const upA = 5 - fingerA;
+  const upB = 5 - fingerB;
   const dizaines = totalDown * 10;
   const unites = upA * upB;
 
@@ -1142,8 +1141,8 @@ function showCalc(a, b, res) {
   d.innerHTML = `
     <div style="background:#f0f8ff;border:3px solid var(--blue);border-radius:12px;padding:14px;box-shadow:3px 3px 0 var(--dark);">
       <strong style="font-family:'Bangers',cursive;font-size:1.3rem;color:var(--blue);">Comment on fait ${a} × ${b} ?</strong><br><br>
-      🤚 Main gauche : plie le doigt <strong>${a}</strong> + vers auriculaire → <strong>${fingerA} doigt(s) bas</strong>, <strong>${upA} doigt(s) levé(s)</strong><br>
-      🤚 Main droite : plie le doigt <strong>${b}</strong> + vers auriculaire → <strong>${fingerB} doigt(s) bas</strong>, <strong>${upB} doigt(s) levé(s)</strong><br><br>
+      🤚 Main gauche : plie le doigt <strong>${a}</strong> → <strong>${fingerA} doigt(s) bas</strong>, <strong>${upA} doigt(s) levé(s)</strong><br>
+      🤚 Main droite : plie le doigt <strong>${b}</strong> → <strong>${fingerB} doigt(s) bas</strong>, <strong>${upB} doigt(s) levé(s)</strong><br><br>
       📊 Dizaines : (${fingerA} + ${fingerB}) × 10 = <strong>${totalDown} × 10 = ${dizaines}</strong><br>
       ✖️ Unités : ${upA} × ${upB} = <strong>${unites}</strong><br><br>
       🎯 <strong>${dizaines} + ${unites} = <span style="color:var(--red);font-size:1.2rem">${res}</span></strong>
@@ -1152,119 +1151,49 @@ function showCalc(a, b, res) {
   d.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-// Finger SVG generator — fidèle à l'image source
-// Layout : mains verticales, paumes face à soi
-//   Pouce    = 10  → tout en HAUT  (côté intérieur / centre)
-//   Index    =  9
-//   Majeur   =  8
-//   Annulaire=  7
-//   Auriculaire= 6 → tout en BAS   (côté extérieur)
-//
-// Main GAUCHE : pouce à droite (centre), auriculaire à gauche (extérieur)
-//   ordre top→bottom des doigts sur l'axe Y :  pouce(10), index(9), majeur(8), annulaire(7), auriculaire(6)
-//   mais tous les doigts partent du haut de la paume → le pouce est le plus court visuellement,
-//   l'auriculaire le plus petit → les doigts s'étalent horizontalement depuis la paume.
-//
-// On dessine les doigts HORIZONTALEMENT depuis la paume centrale :
-//   Main G : doigts pointent vers la GAUCHE  (auriculaire=6 en bas, pouce=10 en haut)
-//   Main D : doigts pointent vers la DROITE  (auriculaire=6 en bas, pouce=10 en haut)
-//
-// Pliage : doigt N + tous vers auriculaire (≤ N) sont pliés (raccourcis / repliés vers paume)
-//   DOWN = num ≤ N  → count = N - 5
-//   UP   = num > N  → count = 10 - N
-
+// Finger SVG generator
 function handSVG(side, numbers, bent, highlightDown = false, highlightUp = false) {
-  // Ordre vertical, pouce en haut (10) → auriculaire en bas (6)
-  // fingerOrder[0] = 10 (pouce, en haut), fingerOrder[4] = 6 (auriculaire, en bas)
-  const fingerOrder = [10, 9, 8, 7, 6]; // top to bottom
+  // 5 fingers: thumb(6), index(7), middle(8), ring(9), pinky(10)
+  const fingerNums = [6, 7, 8, 9, 10];
+  const bentSet = new Set(bent);
 
-  const downThreshold = bent.length > 0 ? Math.min(...bent) : 5; // doigts ≤ seuil sont BAS
+  // For a number n, "down" = n itself AND all lower numbers
+  // "up" = numbers above the bent finger
+  const downLimit = bent.length > 0 ? Math.max(...bent) : 5;
 
-  // SVG dimensions
-  const W = 130, H = 170;
-  // Paume : rectangle vertical au centre
-  const palmW = 34, palmH = 90;
-  const palmX = side === 'left' ? W - palmW - 10 : 10; // paume à droite pour main G (pouce côté centre)
-  const palmY = 38;
+  const fw = 18, fh = 60, gap = 22;
+  const startX = side === 'left' ? 8 : 8;
+  const baseY = 100;
 
-  // Longueurs des doigts (pouce plus court, majeur le plus long)
-  const fingerLengths = { 10: 32, 9: 48, 8: 52, 7: 46, 6: 36 };
-  const fingerW = 13; // épaisseur doigt
-  const fingerSpacing = palmH / 5; // espace vertical entre doigts
+  let svgContent = '';
+  const totalW = 120;
+  const totalH = 140;
 
-  let svg = '';
-
-  // Paume
-  svg += `<rect x="${palmX}" y="${palmY}" width="${palmW}" height="${palmH}" rx="10"
-    fill="#FFCC80" stroke="#1a1a2e" stroke-width="2.5"/>`;
-
-  fingerOrder.forEach((num, i) => {
-    const isDown = num <= downThreshold;
-    const isBent = num === downThreshold;
+  fingerNums.forEach((num, i) => {
+    const isDown = num <= downLimit;
+    const isBent = bentSet.has(num);
+    const x = startX + i * gap;
+    const fhCur = isDown ? fh * 0.55 : fh;
+    const y = isDown ? baseY - fhCur + 10 : baseY - fhCur;
 
     let fillColor = '#FFCC80';
     if (highlightDown && isDown) fillColor = '#FF8A80';
     if (highlightUp && !isDown) fillColor = '#A5D6A7';
 
-    const baseLen = fingerLengths[num];
-    const fLen = isDown ? Math.round(baseLen * 0.45) : baseLen; // replié = très court
-
-    // Position verticale du doigt (depuis paume)
-    const fy = palmY + i * (palmH / 5) + 6;
-
-    let fx, fWidth;
-    if (side === 'left') {
-      // Main gauche : doigts partent vers la gauche depuis le bord gauche de la paume
-      fx = palmX - fLen;
-      fWidth = fLen;
-    } else {
-      // Main droite : doigts partent vers la droite depuis le bord droit de la paume
-      fx = palmX + palmW;
-      fWidth = fLen;
-    }
-
-    // Doigt replié : légèrement incliné vers la paume
-    let transform = '';
-    if (isBent) {
-      const cx = side === 'left' ? palmX : palmX + palmW;
-      const cy = fy + fingerW / 2;
-      transform = `transform="rotate(${side === 'left' ? 15 : -15},${cx},${cy})"`;
-    }
-
-    svg += `<rect x="${fx}" y="${fy}" width="${fWidth}" height="${fingerW}" rx="7"
-      fill="${fillColor}" stroke="#1a1a2e" stroke-width="2" ${transform}/>`;
-
-    // Label du numéro
-    const labelX = side === 'left'
-      ? palmX - baseLen - 4
-      : palmX + palmW + baseLen + 4;
-    const labelAnchor = side === 'left' ? 'end' : 'start';
-    const labelColor = isDown ? '#c62828' : '#2e7d32';
-
-    svg += `<text x="${labelX}" y="${fy + fingerW - 1}" text-anchor="${labelAnchor}"
-      font-family="Nunito,sans-serif" font-size="13" font-weight="900"
-      fill="${labelColor}">${num}</text>`;
+    svgContent += `
+      <rect x="${x}" y="${y}" width="${fw}" height="${fhCur}" rx="9"
+        fill="${fillColor}" stroke="#1a1a2e" stroke-width="2"
+        ${isBent ? 'transform="rotate(30,' + (x+fw/2) + ',' + (y+fhCur) + ')"' : ''}/>
+      <text x="${x + fw/2}" y="${baseY + 18}" text-anchor="middle"
+        font-family="Nunito,sans-serif" font-size="11" font-weight="800"
+        fill="${isDown ? '#c62828' : '#2e7d32'}">${num}</text>
+    `;
   });
 
-  // Poignet
-  const wristX = palmX;
-  const wristY = palmY + palmH;
-  svg += `<rect x="${wristX}" y="${wristY}" width="${palmW}" height="20" rx="6"
-    fill="#F0B070" stroke="#1a1a2e" stroke-width="2"/>`;
+  // Palm
+  svgContent += `<rect x="${startX}" y="${baseY}" width="${4 * gap + fw}" height="28" rx="10" fill="#FFCC80" stroke="#1a1a2e" stroke-width="2"/>`;
 
-  // Flèche indiquant le sens (auriculaire vers le bas)
-  const arrowX = side === 'left' ? 8 : W - 8;
-  svg += `<line x1="${arrowX}" y1="${palmY + palmH - 10}" x2="${arrowX}" y2="${palmY + palmH + 30}"
-    stroke="#1a1a2e" stroke-width="2.5" marker-end="url(#arr)"/>`;
-
-  return `<svg class="hand-svg" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
-        <path d="M0,0 L8,4 L0,8 Z" fill="#1a1a2e"/>
-      </marker>
-    </defs>
-    ${svg}
-  </svg>`;
+  return `<svg class="hand-svg" viewBox="0 0 ${totalW} ${totalH}" xmlns="http://www.w3.org/2000/svg">${svgContent}</svg>`;
 }
 
 
@@ -1347,9 +1276,9 @@ function loadQuestion() {
 
   // Fingers hint
   const downA = a - 5, downB = b - 5;
-  const upA2 = 10 - a, upB2 = 10 - b;
+  const upA = 5 - downA, upB = 5 - downB;
   document.getElementById('fingersHint').textContent =
-    `🤚 Main G: plie ${a} + vers auriculaire (${downA} bas, ${upA2} levés)  |  Main D: plie ${b} + vers auriculaire (${downB} bas, ${upB2} levés)`;
+    `🤚 Main G: plie doigt ${a} (${downA} bas, ${upA} levés)  |  Main D: plie doigt ${b} (${downB} bas, ${upB} levés)`;
 
   // Quiz bubble rotator
   const bubbles = [
