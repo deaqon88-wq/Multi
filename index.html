@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tables de Multiplication - Méthode des Mains</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&family=Nunito:wght@400;700;800;900&display=swap');
+
+  :root {
+    --yellow: #f7b456;
+    --red: #7f1b1b;
+    --blue: #264556;
+    --green: #619b78;
+    --orange: #FF8C00;
+    --purple: #ac85d0;
+    --bg: #FFF8E1;
+    --dark: #1a1a2e;
+    --panel-bg: #fff;
+    --speech-bg: #fff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Lucida', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== SCREEN SYSTEM ===== */
+  .screen {
+    display: none;
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    animation: fadeIn 0.5s ease;
+  }
+  .screen.active { display: flex; }
+
+  @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes slideIn { from { opacity:0; transform:translateX(-40px); } to { opacity:1; transform:translateX(0); } }
+  @keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-12px);} }
+  @keyframes shake { 0%,100%{transform:translateX(0);} 20%,60%{transform:translateX(-8px);} 40%,80%{transform:translateX(8px);} }
+  @keyframes pop { 0%{transform:scale(0.5);opacity:0;} 70%{transform:scale(1.2);} 100%{transform:scale(1);opacity:1;} }
+  @keyframes starPop { 0%{transform:scale(0) rotate(-30deg);opacity:0;} 60%{transform:scale(1.3) rotate(10deg);} 100%{transform:scale(1) rotate(0);opacity:1;} }
+  @keyframes sparkle {
+    0%{transform:scale(1) rotate(0);opacity:1;}
+    50%{transform:scale(1.5) rotate(180deg);opacity:0.7;}
+    100%{transform:scale(1) rotate(360deg);opacity:0;}
+  }
+  @keyframes typing { from{width:0;} to{width:100%;} }
+  @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+  @keyframes floatUp {
+    0%{transform:translateY(0) scale(1);opacity:1;}
+    100%{transform:translateY(-120px) scale(0.5);opacity:0;}
+  }
+  @keyframes wiggle {
+    0%,100%{transform:rotate(0deg);}
+    25%{transform:rotate(-5deg);}
+    75%{transform:rotate(5deg);}
+  }
+  @keyframes countdown {
+    from{stroke-dashoffset:0;}
+    to{stroke-dashoffset:283;}
+  }
+
+  /* ===== HEADER ===== */
+  .top-bar {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background: var(--dark);
+    border-radius: 16px;
+    margin-bottom: 20px;
+    box-shadow: 4px 4px 0 var(--yellow);
+  }
+  .top-bar h1 {
+    font-family: 'Bangers', cursive;
+    color: var(--yellow);
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 0 var(--red);
+  }
+  .stars-display {
+    display: flex;
+    gap: 4px;
+    font-size: 1.4rem;
+  }
+
+  /* ===== MANGA PANEL ===== */
+  .manga-scene {
+    width: 100%;
+    max-width: 800px;
+    background: white;
+    border: 4px solid var(--dark);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 6px 6px 0 var(--dark);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .manga-scene::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 20px,
+      rgba(255,224,0,0.05) 20px,
+      rgba(255,224,0,0.05) 21px
+    );
+    pointer-events: none;
+  }
+
+  .scene-content {
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ===== CHARACTER ===== */
+  .character-wrap {
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .character {
+    width: 130px;
+    height: 200px;
+    position: relative;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  /* SVG character - Ash style */
+  .char-svg { width: 130px; height: 200px; }
+
+  .speech-bubble {
+    background: white;
+    border: 3px solid var(--dark);
+    border-radius: 20px;
+    padding: 14px 18px;
+    flex: 1;
+    font-family: 'Comic Neue', cursive;
+    font-size: 1rem;
+    line-height: 1.5;
+    font-weight: 700;
+    color: var(--dark);
+    position: relative;
+    box-shadow: 3px 3px 0 var(--dark);
+    min-height: 80px;
+  }
+  .speech-bubble::before {
+    content: '';
+    position: absolute;
+    left: -18px;
+    bottom: 30px;
+    border: 9px solid transparent;
+    border-right-color: var(--dark);
+  }
+  .speech-bubble::after {
+    content: '';
+    position: absolute;
+    left: -11px;
+    bottom: 32px;
+    border: 7px solid transparent;
+    border-right-color: white;
+  }
+
+  .text-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: var(--dark);
+    margin-left: 2px;
+    vertical-align: middle;
+    animation: blink 0.8s infinite;
+  }
+
+  /* ===== HAND METHOD VISUAL ===== */
+  .method-visual {
+    width: 100%;
+    max-width: 800px;
+    background: white;
+    border: 4px solid var(--dark);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 6px 6px 0 var(--dark);
+  }
+  .method-title {
+    font-family: 'Bangers', cursive;
+    font-size: 1.8rem;
+    color: var(--blue);
+    text-align: center;
+    margin-bottom: 16px;
+    text-shadow: 2px 2px 0 var(--dark);
+    letter-spacing: 2px;
+  }
+
+  .hands-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin: 16px 0;
+  }
+
+  .hand-box {
+    text-align: center;
+  }
+  .hand-box label {
+    display: block;
+    font-weight: 800;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+    color: var(--dark);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .hand-svg {
+    width: 120px;
+    height: 140px;
+  }
+
+  .formula-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 16px 0;
+    font-family: 'Bangers', cursive;
+    font-size: 1.4rem;
+    color: var(--dark);
+  }
+  .formula-box {
+    background: var(--yellow);
+    border: 3px solid var(--dark);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 1.2rem;
+    box-shadow: 3px 3px 0 var(--dark);
+    text-align: center;
+  }
+  .formula-box.blue { background: #d0e8ff; }
+  .formula-box.green { background: #d0ffe8; }
+  .formula-box.red { background: #ffd0d0; }
+  .formula-box.big {
+    font-size: 1.6rem;
+    background: var(--red);
+    color: white;
+    animation: pop 0.4s ease;
+  }
+
+  /* ===== STEP NAVIGATION ===== */
+  .step-dots {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin: 12px 0;
+  }
+  .dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: #ddd;
+    border: 2px solid var(--dark);
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .dot.active { background: var(--blue); transform: scale(1.3); }
+  .dot.done { background: var(--green); }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    font-family: 'Bangers', cursive;
+    font-size: 1.4rem;
+    letter-spacing: 2px;
+    padding: 12px 28px;
+    border: 3px solid var(--dark);
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--dark);
+    transition: all 0.15s;
+    text-transform: uppercase;
+    background: var(--yellow);
+    color: var(--dark);
+    margin: 6px;
+  }
+  .btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--dark); }
+  .btn:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 var(--dark); }
+  .btn.blue { background: var(--blue); color: white; }
+  .btn.red { background: var(--red); color: white; }
+  .btn.green { background: var(--green); color: white; }
+  .btn.purple { background: var(--purple); color: white; }
+
+  /* ===== QUIZ ===== */
+  .quiz-card {
+    width: 100%;
+    max-width: 800px;
+    background: white;
+    border: 4px solid var(--dark);
+    border-radius: 20px;
+    padding: 28px 24px;
+    text-align: center;
+    box-shadow: 8px 8px 0 var(--dark);
+    position: relative;
+  }
+
+  .quiz-question {
+    font-family: 'Lucida', cursive;
+    font-size: 3.5rem;
+    color: var(--dark);
+    margin: 16px 0;
+    text-shadow: 3px 3px 0 var(--yellow);
+    letter-spacing: 4px;
+  }
+
+  .quiz-progress {
+    font-weight: 800;
+    color: var(--blue);
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 12px;
+    background: #eee;
+    border: 2px solid var(--dark);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue), var(--purple));
+    border-radius: 6px;
+    transition: width 0.5s ease;
+  }
+
+  /* Timer ring */
+  .timer-ring {
+    position: absolute;
+    top: 16px; right: 16px;
+  }
+  .timer-svg { transform: rotate(-90deg); }
+  .timer-circle {
+    fill: none;
+    stroke: #eee;
+    stroke-width: 6;
+  }
+  .timer-fill {
+    fill: none;
+    stroke: var(--orange);
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-dasharray: 283;
+    stroke-dashoffset: 0;
+    transition: stroke 0.3s;
+  }
+  .timer-text {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    font-family: 'Bangers', cursive;
+    font-size: 1.1rem;
+    color: var(--dark);
+  }
+
+  .answer-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin: 16px 0;
+  }
+  .answer-btn {
+    font-family: 'Lucida', cursive;
+    font-size: 2rem;
+    padding: 16px;
+    border: 3px solid var(--dark);
+    border-radius: 14px;
+    cursor: pointer;
+    background: white;
+    box-shadow: 4px 4px 0 var(--dark);
+    transition: all 0.15s;
+    letter-spacing: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+  .answer-btn:hover:not(:disabled) {
+    transform: translate(-2px,-2px);
+    box-shadow: 6px 6px 0 var(--dark);
+    background: var(--yellow);
+  }
+  .answer-btn:active:not(:disabled) { transform: translate(2px,2px); box-shadow: 2px 2px 0 var(--dark); }
+  .answer-btn.correct { background: var(--green)!important; color: white!important; animation: pop 0.3s ease; }
+  .answer-btn.wrong { background: var(--red)!important; color: white!important; animation: shake 0.4s ease; }
+  .answer-btn:disabled { cursor: default; }
+
+  /* ===== FEEDBACK ===== */
+  .feedback-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .feedback-overlay.show { opacity: 1; }
+
+  .feedback-emoji {
+    font-size: 6rem;
+    animation: pop 0.5s ease;
+    text-align: center;
+  }
+  .feedback-text {
+    font-family: 'Bangers', cursive;
+    font-size: 3rem;
+    color: white;
+    text-shadow: 3px 3px 0 var(--dark);
+    letter-spacing: 3px;
+    text-align: center;
+    animation: pop 0.4s 0.1s ease both;
+  }
+
+  /* ===== CONFETTI ===== */
+  .confetti-wrap {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none; z-index: 200;
+    overflow: hidden;
+  }
+  .confetti-piece {
+    position: absolute;
+    top: -20px;
+    width: 12px; height: 12px;
+    border-radius: 2px;
+    animation: fall 1.5s ease-in forwards;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* ===== RESULTS ===== */
+  .results-card {
+    width: 100%;
+    max-width: 600px;
+    background: white;
+    border: 4px solid var(--dark);
+    border-radius: 20px;
+    padding: 36px 24px;
+    text-align: center;
+    box-shadow: 8px 8px 0 var(--dark);
+    margin: auto;
+  }
+  .results-score {
+    font-family: 'Bangers', cursive;
+    font-size: 5rem;
+    color: var(--blue);
+    text-shadow: 4px 4px 0 var(--dark);
+    margin: 16px 0;
+    animation: pop 0.6s ease;
+  }
+  .results-stars {
+    font-size: 3rem;
+    margin: 12px 0;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+  .results-stars span { animation: starPop 0.4s ease both; }
+  .results-msg {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--dark);
+    line-height: 1.5;
+    margin: 12px 0;
+  }
+
+  /* ===== INTRO SCREEN ===== */
+  .intro-title {
+    font-family: 'Bangers', cursive;
+    font-size: 3.5rem;
+    color: var(--dark);
+    text-align: center;
+    text-shadow: 4px 4px 0 var(--yellow);
+    letter-spacing: 4px;
+    margin: 20px 0 10px;
+    animation: pop 0.6s ease;
+  }
+  .intro-subtitle {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--dark);
+    text-align: center;
+    opacity: 0.7;
+    margin-bottom: 24px;
+  }
+  .action-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  /* ===== EXAMPLE PANEL ===== */
+  .example-section {
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 20px;
+  }
+  .example-title {
+    font-family: 'Bangers', cursive;
+    font-size: 1.6rem;
+    color: var(--purple);
+    text-align: center;
+    margin-bottom: 12px;
+    text-shadow: 2px 2px 0 var(--dark);
+    letter-spacing: 2px;
+  }
+  .example-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+  }
+  .example-card {
+    background: white;
+    border: 3px solid var(--dark);
+    border-radius: 12px;
+    padding: 12px 8px;
+    text-align: center;
+    font-family: 'Bangers', cursive;
+    font-size: 1.1rem;
+    box-shadow: 3px 3px 0 var(--dark);
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--dark);
+  }
+  .example-card:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--dark); background: var(--yellow); }
+  .example-card .op { font-size: 1rem; color: var(--blue); display: block; margin-bottom: 4px; }
+  .example-card .res { font-size: 1.4rem; color: var(--red); }
+
+  .highlight {
+    background: var(--yellow);
+    border-radius: 4px;
+    padding: 0 4px;
+    font-weight: 800;
+  }
+
+  .tip-box {
+    background: linear-gradient(135deg, #fff9d0, #fffce8);
+    border: 3px solid var(--yellow);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--dark);
+    margin-top: 12px;
+    box-shadow: 3px 3px 0 var(--dark);
+  }
+  .tip-box strong { color: var(--red); }
+
+  /* Floating stars */
+  .float-star {
+    position: fixed;
+    pointer-events: none;
+    font-size: 2rem;
+    animation: floatUp 1s ease forwards;
+    z-index: 150;
+  }
+
+  /* ===== STEPS LESSON ===== */
+  .lesson-step {
+    display: none;
+  }
+  .lesson-step.visible { display: block; animation: slideIn 0.4s ease; }
+
+  .step-header {
+    font-family: 'Bangers', cursive;
+    font-size: 1.5rem;
+    color: var(--orange);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 0 var(--dark);
+  }
+
+  .number-badge {
+    display: inline-block;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--dark);
+    color: var(--yellow);
+    font-family: 'Bangers', cursive;
+    font-size: 1.3rem;
+    text-align: center;
+    line-height: 36px;
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+
+  /* Quiz hints */
+  .quiz-hint {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--blue);
+    margin-bottom: 4px;
+    opacity: 0.8;
+    letter-spacing: 1px;
+  }
+
+  .fingers-hint {
+    font-size: 0.8rem;
+    color: #666;
+    font-weight: 600;
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 600px) {
+    .intro-title { font-size: 2.2rem; }
+    .quiz-question { font-size: 2.5rem; }
+    .answer-btn { font-size: 1.5rem; padding: 12px; }
+    .char-svg { width: 90px; height: 140px; }
+    .speech-bubble { font-size: 0.9rem; }
+    .hands-container { gap: 16px; }
+    .hand-svg { width: 80px; height: 100px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- CONFETTI container -->
+<div class="confetti-wrap" id="confettiWrap"></div>
+
+<!-- FEEDBACK overlay -->
+<div class="feedback-overlay" id="feedbackOverlay">
+  <div class="feedback-emoji" id="feedbackEmoji"></div>
+  <div class="feedback-text" id="feedbackText"></div>
+</div>
+
+<!-- ===================== SCREEN 1: INTRO ===================== -->
+<div class="screen active" id="screenIntro">
+  <div class="top-bar">
+    <h1>⚡ MAÎTRISE DES TABLES ⚡</h1>
+    <div class="stars-display" id="starsDisplay">⭐⭐⭐</div>
+  </div>
+
+  <div class="intro-title">LA MÉTHODE DES DOIGTS !</div>
+  <div class="intro-subtitle">Tables de 6 à 10 – Jamais plus jamais oublier !</div>
+
+  <div class="manga-scene">
+    <div class="scene-content">
+      <div class="character-wrap">
+        <svg class="char-svg" viewBox="0 0 130 200" xmlns="http://www.w3.org/2000/svg">
+          <!-- Sacha-style character -->
+          <!-- Body -->
+          <rect x="35" y="90" width="60" height="70" rx="8" fill="#1e88e5" stroke="#1a1a2e" stroke-width="2.5"/>
+          <!-- White stripe on jacket -->
+          <rect x="55" y="90" width="20" height="70" fill="white" stroke="#1a1a2e" stroke-width="1.5"/>
+          <!-- Pants -->
+          <rect x="35" y="150" width="26" height="40" rx="6" fill="#333" stroke="#1a1a2e" stroke-width="2"/>
+          <rect x="69" y="150" width="26" height="40" rx="6" fill="#333" stroke="#1a1a2e" stroke-width="2"/>
+          <!-- Shoes -->
+          <ellipse cx="48" cy="188" rx="16" ry="8" fill="#222" stroke="#1a1a2e" stroke-width="2"/>
+          <ellipse cx="82" cy="188" rx="16" ry="8" fill="#222" stroke="#1a1a2e" stroke-width="2"/>
+          <!-- Neck -->
+          <rect x="55" y="75" width="20" height="20" fill="#FFCC80" stroke="#1a1a2e" stroke-width="1.5"/>
+          <!-- Head -->
+          <ellipse cx="65" cy="55" rx="38" ry="38" fill="#FFCC80" stroke="#1a1a2e" stroke-width="2.5"/>
+          <!-- Hair - dark spiky like Ash -->
+          <path d="M 28 50 Q 20 20 45 18 Q 50 8 65 12 Q 80 8 85 18 Q 100 22 103 45 Q 90 30 80 28 Q 75 20 65 22 Q 55 20 50 28 Q 38 30 28 50Z" fill="#1a1a2e" stroke="#1a1a2e" stroke-width="1"/>
+          <!-- Hat - red cap like Ash -->
+          <path d="M 30 48 Q 28 35 65 32 Q 102 35 100 48 Z" fill="#e53935" stroke="#1a1a2e" stroke-width="2"/>
+          <rect x="20" y="46" width="90" height="10" rx="5" fill="#e53935" stroke="#1a1a2e" stroke-width="2"/>
+          <!-- Cap brim extra -->
+          <rect x="15" y="50" width="40" height="8" rx="4" fill="#c62828" stroke="#1a1a2e" stroke-width="1.5"/>
+          <!-- Eyes -->
+          <ellipse cx="52" cy="58" rx="8" ry="8" fill="white" stroke="#1a1a2e" stroke-width="1.5"/>
+          <ellipse cx="78" cy="58" rx="8" ry="8" fill="white" stroke="#1a1a2e" stroke-width="1.5"/>
+          <ellipse cx="53" cy="59" rx="5" ry="5" fill="#3e2723"/>
+          <ellipse cx="79" cy="59" rx="5" ry="5" fill="#3e2723"/>
+          <ellipse cx="54" cy="57" rx="2" ry="2" fill="white"/>
+          <ellipse cx="80" cy="57" rx="2" ry="2" fill="white"/>
+          <!-- Eyebrows -->
+          <path d="M 45 50 Q 52 46 59 50" stroke="#1a1a2e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M 71 50 Q 78 46 85 50" stroke="#1a1a2e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <!-- Smile -->
+          <path d="M 52 70 Q 65 80 78 70" stroke="#1a1a2e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <!-- Cheek blush -->
+          <ellipse cx="44" cy="68" rx="8" ry="5" fill="#FFAB91" opacity="0.6"/>
+          <ellipse cx="86" cy="68" rx="8" ry="5" fill="#FFAB91" opacity="0.6"/>
+          <!-- Arms -->
+          <rect x="5" y="92" width="28" height="14" rx="7" fill="#1e88e5" stroke="#1a1a2e" stroke-width="2" transform="rotate(20,19,99)"/>
+          <rect x="97" y="92" width="28" height="14" rx="7" fill="#1e88e5" stroke="#1a1a2e" stroke-width="2" transform="rotate(-20,111,99)"/>
+          <!-- Left hand with fingers up -->
+          <circle cx="15" cy="115" r="12" fill="#FFCC80" stroke="#1a1a2e" stroke-width="2"/>
+          <rect x="8" y="100" width="7" height="16" rx="4" fill="#FFCC80" stroke="#1a1a2e" stroke-width="1.5"/>
+          <rect x="17" y="97" width="7" height="18" rx="4" fill="#FFCC80" stroke="#1a1a2e" stroke-width="1.5"/>
+          <!-- Right fist -->
+          <circle cx="115" cy="115" r="12" fill="#FFCC80" stroke="#1a1a2e" stroke-width="2"/>
+          <!-- Stars effect -->
+          <text x="4" y="22" font-size="14" fill="#FFE000">✦</text>
+          <text x="110" y="22" font-size="14" fill="#FFE000">✦</text>
+          <text x="57" y="8" font-size="10" fill="#FFE000">★</text>
+        </svg>
+      </div>
+      <div class="speech-bubble" id="introBubble">
+        Salut, Dresseur ! Moi c'est <strong>Satoshi</strong> 👋<br>
+        Je vais t'apprendre une <span class="highlight">méthode secrète</span> pour ne plus jamais oublier les tables de 6 à 10 ! 💪<br><br>
+        Avec seulement <strong>tes 10 doigts</strong>, tu vas calculer en quelques secondes !
+      </div>
+    </div>
+  </div>
+
+  <div class="action-row">
+    <button class="btn blue" onclick="showScreen('screenLesson')">⚡ APPRENDRE LA MÉTHODE !</button>
+    <button class="btn" onclick="showScreen('screenQuiz')">🎮 DIRECTEMENT AU QUIZ</button>
+  </div>
+</div>
+
+
+<!-- ===================== SCREEN 2: LESSON ===================== -->
+<div class="screen" id="screenLesson">
+  <div class="top-bar">
+    <h1>⚡ LA MÉTHODE ⚡</h1>
+    <div class="stars-display" id="starsDisplay2">⭐⭐⭐</div>
+  </div>
+
+  <div class="manga-scene">
+    <div class="scene-content">
+      <div class="character-wrap">
+        <svg class="char-svg" viewBox="0 0 130 200" xmlns="http://www.w3.org/2000/svg" id="lessonChar">
+          <rect x="35" y="90" width="60" height="70" rx="8" fill="#1e88e5" stroke="#1a1a2e" stroke-width="2.5"/>
+          <rect x="55" y="90" width="20" height="70" fill="white" stroke="#1a1a2e" stroke-width="1.5"/>
+          <rect x="35" y="150" width="26" height="40" rx="6" fill="#333" stroke="#1a1a2e" stroke-width="2"/>
+          <rect x="69" y="150" width="26" height="40" rx="6" fill="#333" stroke="#1a1a2e" stroke-width="2"/>
+          <ellipse cx="48" cy="188" rx="16" ry="8" fill="#222" stroke="#1a1a2e" stroke-width="2"/>
+          <ellipse cx="82" cy="188" rx="16" ry="8" fill="#222" stroke="#1a1a2e" stroke-width="2"/>
+          <rect x="55" y="75" width="20" height="20" fill="#FFCC80" stroke="#1a1a2e" stroke-width="1.5"/>
+          <ellipse cx="65" cy="55" rx="38" ry="38" fill="#FFCC80" stroke="#1a1a2e" stroke-width="2.5"/>
+          <path d="M 28 50 Q 20 20 45 18 Q 50 8 65 12 Q 80 8 85 18 Q 100 22 103 45 Q 90 30 80 28 Q 75 20 65 22 Q 55 20 50 28 Q 38 30 28 50Z" fill="#1a1a2e" stroke="#1a1a2e" stroke-width="1"/>
+          <path d="M 30 48 Q 28 35 65 32 Q 102 35 100 48 Z" fill="#e53935" stroke="#1a1a2e" stroke-width="2"/>
+          <rect x="20" y="46" width="90" height="10" rx="5" fill="#e53935" stroke="#1a1a2e" stroke-width="2"/>
+          <rect x="15" y="50" width="40" height="8" rx="4" fill="#c62828" stroke="#1a1a2e" stroke-width="1.5"/>
+          <ellipse cx="52" cy="58" rx="8" ry="8" fill="white" stroke="#1a1a2e" stroke-width="1.5"/>
+          <ellipse cx="78" cy="58" rx="8" ry="8" fill="white" stroke="#1a1a2e" stroke-width="1.5"/>
+          <ellipse cx="53" cy="59" rx="5" ry="5" fill="#3e2723"/>
+          <ellipse cx="79" cy="59" rx="5" ry="5" fill="#3e2723"/>
+          <ellipse cx="54" cy="57" rx="2" ry="2" fill="white"/>
+          <ellipse cx="80" cy="57" rx="2" ry="2" fill="white"/>
+          <path d="M 45 50 Q 52 46 59 50" stroke="#1a1a2e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M 71 50 Q 78 46 85 50" stroke="#1a1a2e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M 52 70 Q 65 80 78 70" stroke="#1a1a2e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <ellipse cx="44" cy="68" rx="8" ry="5" fill="#FFAB91" opacity="0.6"/>
+          <ellipse cx="86" cy="68" rx="8" ry="5" fill="#FFAB91" opacity="0.6"/>
+          <rect x="5" y="92" width="28" height="14" rx="7" fill="#1e88e5" stroke="#1a1a2e" stroke-width="2" transform="rotate(20,19,99)"/>
+          <rect x="97" y="92" width="28" height="14" rx="7" fill="#1e88e5" stroke="#1a1a2e" stroke-width="2" transform="rotate(-20,111,99)"/>
+          <circle cx="15" cy="115" r="12" fill="#FFCC80" stroke="#1a1a2e" stroke-width="2"/>
+          <circle cx="115" cy="115" r="12" fill="#FFCC80" stroke="#1a1a2e" stroke-width="2"/>
+        </svg>
+      </div>
+      <div class="speech-bubble" id="lessonBubble">Chargement...</div>
+    </div>
+  </div>
+
+  <!-- Step dots -->
+  <div class="step-dots" id="stepDots"></div>
+
+  <!-- Method visual area -->
+  <div class="method-visual" id="methodVisual">
+    <!-- Dynamic content -->
+  </div>
+
+  <div class="action-row" id="lessonActions">
+    <button class="btn" onclick="prevStep()" id="btnPrev" style="display:none">◀ PRÉCÉDENT</button>
+    <button class="btn blue" onclick="nextStep()" id="btnNext">SUIVANT ▶</button>
+  </div>
+</div>
+
+
+<!-- ===================== SCREEN 3: QUIZ ===================== -->
+<div class="screen" id="screenQuiz">
+  <div class="top-bar">
+    <h1>⚡ QUIZ TABLES ⚡</h1>
+    <div class="stars-display" id="starsDisplay3">⭐⭐⭐</div>
+  </div>
+
+  <div class="manga-scene" style="margin-bottom:14px;">
+    <div class="scene-content">
+      <div class="character-wrap">
+        <svg class="char-svg" viewBox="0 0 130 200" xmlns="http://www.w3.org/2000/svg">
+          <rect x="35" y="90" width="60" height="70" rx="8" fill="#1e88e5" stroke="#1a1a2e" stroke-width="2.5"/>
+          <rect x="55" y="90" width="20" height="70" fill="white" stroke="#1a1a2e" stroke-width="1.5"/>
+          <rect x="35" y="150" width="26" height="40" rx="6" fill="#333" stroke="#1a1a2e" stroke-width="2"/>
+          <rect x="69" y="150" width="26" height="40" rx="6" fill="#333" stroke="#1a1a2e" stroke-width="2"/>
+          <ellipse cx="48" cy="188" rx="16" ry="8" fill="#222" stroke="#1a1a2e" stroke-width="2"/>
+          <ellipse cx="82" cy="188" rx="16" ry="8" fill="#222" stroke="#1a1a2e" stroke-width="2"/>
+          <rect x="55" y="75" width="20" height="20" fill="#FFCC80" stroke="#1a1a2e" stroke-width="1.5"/>
+          <ellipse cx="65" cy="55" rx="38" ry="38" fill="#FFCC80" stroke="#1a1a2e" stroke-width="2.5"/>
+          <path d="M 28 50 Q 20 20 45 18 Q 50 8 65 12 Q 80 8 85 18 Q 100 22 103 45 Q 90 30 80 28 Q 75 20 65 22 Q 55 20 50 28 Q 38 30 28 50Z" fill="#1a1a2e" stroke="#1a1a2e" stroke-width="1"/>
+          <path d="M 30 48 Q 28 35 65 32 Q 102 35 100 48 Z" fill="#e53935" stroke="#1a1a2e" stroke-width="2"/>
+          <rect x="20" y="46" width="90" height="10" rx="5" fill="#e53935" stroke="#1a1a2e" stroke-width="2"/>
+          <rect x="15" y="50" width="40" height="8" rx="4" fill="#c62828" stroke="#1a1a2e" stroke-width="1.5"/>
+          <ellipse cx="52" cy="58" rx="8" ry="8" fill="white" stroke="#1a1a2e" stroke-width="1.5"/>
+          <ellipse cx="78" cy="58" rx="8" ry="8" fill="white" stroke="#1a1a2e" stroke-width="1.5"/>
+          <ellipse cx="53" cy="59" rx="5" ry="5" fill="#3e2723"/>
+          <ellipse cx="79" cy="59" rx="5" ry="5" fill="#3e2723"/>
+          <ellipse cx="54" cy="57" rx="2" ry="2" fill="white"/>
+          <ellipse cx="80" cy="57" rx="2" ry="2" fill="white"/>
+          <path d="M 45 50 Q 52 46 59 50" stroke="#1a1a2e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M 71 50 Q 78 46 85 50" stroke="#1a1a2e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M 52 70 Q 65 78 78 70" stroke="#1a1a2e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <ellipse cx="44" cy="68" rx="8" ry="5" fill="#FFAB91" opacity="0.6"/>
+          <ellipse cx="86" cy="68" rx="8" ry="5" fill="#FFAB91" opacity="0.6"/>
+          <rect x="5" y="92" width="28" height="14" rx="7" fill="#1e88e5" stroke="#1a1a2e" stroke-width="2" transform="rotate(20,19,99)"/>
+          <rect x="97" y="92" width="28" height="14" rx="7" fill="#1e88e5" stroke="#1a1a2e" stroke-width="2" transform="rotate(-20,111,99)"/>
+          <circle cx="15" cy="115" r="12" fill="#FFCC80" stroke="#1a1a2e" stroke-width="2"/>
+          <circle cx="115" cy="115" r="12" fill="#FFCC80" stroke="#1a1a2e" stroke-width="2"/>
+          <text x="4" y="22" font-size="16" fill="#FFE000" style="animation:wiggle 1s infinite">⚡</text>
+          <text x="105" y="22" font-size="16" fill="#FFE000">⚡</text>
+        </svg>
+      </div>
+      <div class="speech-bubble" id="quizBubble">À toi de jouer, Dresseur ! 🎯<br>Utilise la <strong>méthode des doigts pour calculer plus vite que la Team Rocket</strong> pour trouver la bonne réponse !</div>
+    </div>
+  </div>
+
+  <div class="quiz-card" id="quizCard">
+    <div class="timer-ring">
+      <svg class="timer-svg" width="60" height="60" viewBox="0 0 60 60">
+        <circle class="timer-circle" cx="30" cy="30" r="24"/>
+        <circle class="timer-fill" id="timerCircle" cx="30" cy="30" r="24"/>
+      </svg>
+      <div class="timer-text" id="timerText">10</div>
+    </div>
+
+    <div class="quiz-progress" id="quizProgress">Question 1 / 25</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="quiz-hint" id="quizHint">COMBIEN FONT...</div>
+    <div class="quiz-question" id="quizQuestion">6 × 7</div>
+    <div class="fingers-hint" id="fingersHint">🤚 Plie le doigt n°2 (=7) de ta main gauche et le doigt n°7 (=7) de ta main droite</div>
+
+    <div class="answer-grid" id="answerGrid">
+      <!-- buttons injected by JS -->
+    </div>
+  </div>
+
+  <div class="action-row">
+    <button class="btn" onclick="showScreen('screenLesson')">📚 REVOIR LA MÉTHODE</button>
+  </div>
+</div>
+
+
+<!-- ===================== SCREEN 4: RESULTS ===================== -->
+<div class="screen" id="screenResults">
+  <div class="top-bar">
+    <h1>⚡ RÉSULTATS ⚡</h1>
+    <div class="stars-display">🏆🏆🏆</div>
+  </div>
+
+  <div class="results-card">
+    <div id="resultEmoji" style="font-size:4rem;margin-bottom:12px;animation:bounce 1s infinite">🎉</div>
+    <div id="resultTitle" style="font-family:'Bangers',cursive;font-size:2.2rem;color:var(--dark);text-shadow:3px 3px 0 var(--yellow);letter-spacing:2px">BRAVO !</div>
+    <div class="results-score" id="resultScore">22/25</div>
+    <div class="results-stars" id="resultStars"></div>
+    <div class="results-msg" id="resultMsg">Super travail, Maître Pokemon !</div>
+
+    <div style="margin-top:20px">
+      <div id="wrongAnswersList" style="text-align:left;font-size:0.9rem;font-weight:700;color:#666;max-height:200px;overflow-y:auto;"></div>
+    </div>
+
+    <div class="action-row" style="margin-top:20px">
+      <button class="btn blue" onclick="restartQuiz()">🔄 RECOMMENCER</button>
+      <button class="btn green" onclick="showScreen('screenLesson')">📚 RÉVISER</button>
+      <button class="btn" onclick="showScreen('screenIntro')">🏠 ACCUEIL</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ============================================================
+//  LESSON DATA
+// ============================================================
+const lessonSteps = [
+  {
+    msg: `La <strong>méthode des doigts</strong> c'est magique ! 🪄<br>Associe chaque doigt à un nombre de 6 à 10. Regarde :`,
+    render: renderStep0
+  },
+  {
+    msg: `Maintenant, pour multiplier deux nombres entre 6 et 10, <span class="highlight">plie le doigt correspondant</span> sur chaque main. Essayons <strong>7 × 8</strong> !`,
+    render: renderStep1
+  },
+  {
+    msg: `<strong>Étape 1 :</strong> Les doigts <strong>pliés (le doigt N + ceux vers l'auriculaire)</strong> s'additionnent sur les deux mains. Ça donne les <span class="highlight">dizaines</span> !`,
+    render: renderStep2
+  },
+  {
+    msg: `<strong>Étape 2 :</strong> Les doigts <strong>levés</strong> de chaque main se <em>multiplient</em> entre eux. Ça donne les <span class="highlight">unités</span> !`,
+    render: renderStep3
+  },
+  {
+    msg: `<strong>Résultat final :</strong> On additionne les dizaines et les unités !<br>7 × 8 = <strong>50 + 6 = 56</strong> ✅ C'est magique non ?`,
+    render: renderStep4
+  },
+  {
+    msg: `Maintenant tu connais toutes les tables ! Voici un récap de tous les croisements 6 à 10. Clique sur un calcul pour le vérifier ! 🎓`,
+    render: renderStep5,
+    last: true
+  }
+];
+
+let currentStep = 0;
+
+function buildStepDots() {
+  const d = document.getElementById('stepDots');
+  d.innerHTML = '';
+  lessonSteps.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === currentStep ? ' active' : (i < currentStep ? ' done' : ''));
+    dot.onclick = () => { currentStep = i; updateLesson(); };
+    d.appendChild(dot);
+  });
+}
+
+function updateLesson() {
+  buildStepDots();
+  const step = lessonSteps[currentStep];
+  typeText('lessonBubble', step.msg);
+  step.render();
+  document.getElementById('btnPrev').style.display = currentStep > 0 ? 'inline-block' : 'none';
+  const btnNext = document.getElementById('btnNext');
+  if (step.last) {
+    btnNext.textContent = '🎮 PASSER AU QUIZ !';
+    btnNext.className = 'btn green';
+    btnNext.onclick = () => showScreen('screenQuiz');
+  } else {
+    btnNext.textContent = 'SUIVANT ▶';
+    btnNext.className = 'btn blue';
+    btnNext.onclick = nextStep;
+  }
+}
+
+function nextStep() {
+  if (currentStep < lessonSteps.length - 1) {
+    currentStep++;
+    updateLesson();
+  }
+}
+
+function prevStep() {
+  if (currentStep > 0) {
+    currentStep--;
+    updateLesson();
+  }
+}
+
+// --- Step renders ---
+
+function renderStep0() {
+  document.getElementById('methodVisual').innerHTML = `
+    <div class="method-title">📌 NUMÉROTATION DES DOIGTS</div>
+    <div class="hands-container">
+      <div class="hand-box">
+        <label>Main gauche</label>
+        ${handSVG('left', [6,7,8,9,10], [])}
+      </div>
+      <div style="font-family:'Bangers',cursive;font-size:2rem;color:var(--dark);">×</div>
+      <div class="hand-box">
+        <label>Main droite</label>
+        ${handSVG('right', [6,7,8,9,10], [])}
+      </div>
+    </div>
+    <div class="tip-box">
+      💡 <strong>Règle :</strong> Le pouce = <strong>6</strong>, l'index = <strong>7</strong>, le majeur = <strong>8</strong>, l'annulaire = <strong>9</strong>, l'auriculaire = <strong>10</strong>.<br>
+      C'est la même numérotation sur les deux mains !
+    </div>
+  `;
+}
+
+function renderStep1() {
+  // 7 × 8 : plier doigt 2 (index=7) main G et doigt 3 (majeur=8) main D
+  document.getElementById('methodVisual').innerHTML = `
+    <div class="method-title">✋ 7 × 8 = ? LET'S GO !</div>
+    <div style="text-align:center;margin-bottom:12px;font-weight:800;font-size:1rem;">
+      Plie l'<strong style="color:var(--red)">annulaire (= 7) + l'auriculaire</strong> sur la main gauche<br>
+      et le <strong style="color:var(--blue)">majeur (= 8) + annulaire + auriculaire</strong> sur la main droite
+    </div>
+    <div class="hands-container">
+      <div class="hand-box">
+        <label>Main gauche (7)</label>
+        ${handSVG('left', [6,7,8,9,10], [7])}
+      </div>
+      <div style="font-family:'Bangers',cursive;font-size:2rem;color:var(--dark);">×</div>
+      <div class="hand-box">
+        <label>Main droite (8)</label>
+        ${handSVG('right', [6,7,8,9,10], [8])}
+      </div>
+    </div>
+    <div class="tip-box">
+      💡 Le doigt plié représente le <strong>nombre à multiplier</strong>. Tous les doigts en dessous (inclus) sont aussi "vers le bas".
+    </div>
+  `;
+}
+
+function renderStep2() {
+  document.getElementById('methodVisual').innerHTML = `
+    <div class="method-title">📊 ÉTAPE 1 : LES DIZAINES</div>
+    <div style="text-align:center;margin-bottom:12px;font-weight:800;font-size:0.95rem;">
+      Compte tous les doigts <strong style="color:var(--red)">pliés + en dessous</strong> (sur les 2 mains)
+    </div>
+    <div class="hands-container">
+      <div class="hand-box">
+        <label>Main G → <span style="color:var(--red)">2 doigts bas</span></label>
+        ${handSVG('left', [6,7,8,9,10], [7], true)}
+      </div>
+      <div style="font-family:'Bangers',cursive;font-size:2rem;color:var(--dark);">+</div>
+      <div class="hand-box">
+        <label>Main D → <span style="color:var(--red)">3 doigts bas</span></label>
+        ${handSVG('right', [6,7,8,9,10], [8], true)}
+      </div>
+    </div>
+    <div class="formula-row">
+      <div class="formula-box blue">2 bas</div>
+      <span>+</span>
+      <div class="formula-box blue">3 bas</div>
+      <span>=</span>
+      <div class="formula-box">5 doigts</div>
+      <span>→</span>
+      <div class="formula-box red" style="background:var(--orange);color:white"><strong>50</strong> dizaines</div>
+    </div>
+    <div class="tip-box">💡 Total doigts bas (les 2 mains) × 10 = <strong>5 × 10 = 50</strong></div>
+  `;
+}
+
+function renderStep3() {
+  document.getElementById('methodVisual').innerHTML = `
+    <div class="method-title">✖️ ÉTAPE 2 : LES UNITÉS</div>
+    <div style="text-align:center;margin-bottom:12px;font-weight:800;font-size:0.95rem;">
+      Compte les doigts <strong style="color:var(--green)">levés</strong> de chaque main, puis <strong>multiplie-les</strong>
+    </div>
+    <div class="hands-container">
+      <div class="hand-box">
+        <label>Main G → <span style="color:var(--green)">3 levés</span></label>
+        ${handSVG('left', [6,7,8,9,10], [7], false, true)}
+      </div>
+      <div style="font-family:'Bangers',cursive;font-size:2rem;color:var(--dark);">×</div>
+      <div class="hand-box">
+        <label>Main D → <span style="color:var(--green)">2 levés</span></label>
+        ${handSVG('right', [6,7,8,9,10], [8], false, true)}
+      </div>
+    </div>
+    <div class="formula-row">
+      <div class="formula-box green">3 levés</div>
+      <span>×</span>
+      <div class="formula-box green">2 levés</div>
+      <span>=</span>
+      <div class="formula-box red" style="background:var(--green);color:white"><strong>6</strong> unités</div>
+    </div>
+    <div class="tip-box">💡 Doigts levés main G × Doigts levés main D = <strong>3 × 2 = 6</strong></div>
+  `;
+}
+
+function renderStep4() {
+  document.getElementById('methodVisual').innerHTML = `
+    <div class="method-title">🎯 RÉSULTAT FINAL !</div>
+    <div class="formula-row" style="font-size:1.6rem;justify-content:center;gap:16px;flex-wrap:wrap;">
+      <div class="formula-box red" style="background:var(--orange);color:white"><strong>50</strong><br><small style="font-size:0.7rem">dizaines</small></div>
+      <span style="font-size:2rem">+</span>
+      <div class="formula-box red" style="background:var(--green);color:white"><strong>6</strong><br><small style="font-size:0.7rem">unités</small></div>
+      <span style="font-size:2rem">=</span>
+      <div class="formula-box big"><strong>56</strong></div>
+    </div>
+    <div style="text-align:center;font-family:'Bangers',cursive;font-size:2rem;margin:16px 0;color:var(--dark);text-shadow:2px 2px 0 var(--yellow)">
+      7 × 8 = 56 ✅
+    </div>
+    <div class="tip-box" style="text-align:center">
+      🔁 <strong>Résumé de la méthode :</strong><br>
+      1️⃣ Plie le doigt du nombre + tous ceux vers l'auriculaire sur chaque main<br>
+      2️⃣ Compte les doigts bas (des 2 mains) → ×10 = dizaines<br>
+      3️⃣ Doigts levés main G × Doigts levés main D = unités<br>
+      4️⃣ Dizaines + Unités = Résultat !
+    </div>
+  `;
+}
+
+function renderStep5() {
+  const pairs = [];
+  for (let a = 6; a <= 10; a++) {
+    for (let b = a; b <= 10; b++) {
+      pairs.push([a, b]);
+    }
+  }
+  let cards = pairs.map(([a, b]) => {
+    const res = a * b;
+    return `<div class="example-card" onclick="showCalc(${a},${b},${res})">
+      <span class="op">${a} × ${b}</span>
+      <span class="res">${res}</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('methodVisual').innerHTML = `
+    <div class="method-title">📋 TABLE COMPLÈTE 6→10</div>
+    <div class="example-grid">${cards}</div>
+    <div class="tip-box" style="margin-top:14px">
+      👆 Clique sur un calcul pour voir comment appliquer la méthode !
+    </div>
+    <div id="calcDetail" style="margin-top:12px;display:none;"></div>
+  `;
+}
+
+function showCalc(a, b, res) {
+  // Calculate using finger method
+  // DOWN fingers = doigt N + tous vers auriculaire (≤ N) => count = N - 5
+  // UP  fingers = doigts vers le pouce (> N)             => count = 10 - N
+  const fingerA = a - 5; // doigts bas main G
+  const fingerB = b - 5; // doigts bas main D
+  const totalDown = fingerA + fingerB;
+  const upA = 10 - a; // doigts levés main G (vers le pouce)
+  const upB = 10 - b; // doigts levés main D
+  const dizaines = totalDown * 10;
+  const unites = upA * upB;
+
+  const d = document.getElementById('calcDetail');
+  d.style.display = 'block';
+  d.innerHTML = `
+    <div style="background:#f0f8ff;border:3px solid var(--blue);border-radius:12px;padding:14px;box-shadow:3px 3px 0 var(--dark);">
+      <strong style="font-family:'Bangers',cursive;font-size:1.3rem;color:var(--blue);">Comment on fait ${a} × ${b} ?</strong><br><br>
+      🤚 Main gauche : plie le doigt <strong>${a}</strong> + vers auriculaire → <strong>${fingerA} doigt(s) bas</strong>, <strong>${upA} doigt(s) levé(s)</strong><br>
+      🤚 Main droite : plie le doigt <strong>${b}</strong> + vers auriculaire → <strong>${fingerB} doigt(s) bas</strong>, <strong>${upB} doigt(s) levé(s)</strong><br><br>
+      📊 Dizaines : (${fingerA} + ${fingerB}) × 10 = <strong>${totalDown} × 10 = ${dizaines}</strong><br>
+      ✖️ Unités : ${upA} × ${upB} = <strong>${unites}</strong><br><br>
+      🎯 <strong>${dizaines} + ${unites} = <span style="color:var(--red);font-size:1.2rem">${res}</span></strong>
+    </div>
+  `;
+  d.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// Finger SVG generator — fidèle à l'image source
+// Layout : mains verticales, paumes face à soi
+//   Pouce    = 10  → tout en HAUT  (côté intérieur / centre)
+//   Index    =  9
+//   Majeur   =  8
+//   Annulaire=  7
+//   Auriculaire= 6 → tout en BAS   (côté extérieur)
+//
+// Main GAUCHE : pouce à droite (centre), auriculaire à gauche (extérieur)
+//   ordre top→bottom des doigts sur l'axe Y :  pouce(10), index(9), majeur(8), annulaire(7), auriculaire(6)
+//   mais tous les doigts partent du haut de la paume → le pouce est le plus court visuellement,
+//   l'auriculaire le plus petit → les doigts s'étalent horizontalement depuis la paume.
+//
+// On dessine les doigts HORIZONTALEMENT depuis la paume centrale :
+//   Main G : doigts pointent vers la GAUCHE  (auriculaire=6 en bas, pouce=10 en haut)
+//   Main D : doigts pointent vers la DROITE  (auriculaire=6 en bas, pouce=10 en haut)
+//
+// Pliage : doigt N + tous vers auriculaire (≤ N) sont pliés (raccourcis / repliés vers paume)
+//   DOWN = num ≤ N  → count = N - 5
+//   UP   = num > N  → count = 10 - N
+
+function handSVG(side, numbers, bent, highlightDown = false, highlightUp = false) {
+  // Ordre vertical, pouce en haut (10) → auriculaire en bas (6)
+  // fingerOrder[0] = 10 (pouce, en haut), fingerOrder[4] = 6 (auriculaire, en bas)
+  const fingerOrder = [10, 9, 8, 7, 6]; // top to bottom
+
+  const downThreshold = bent.length > 0 ? Math.min(...bent) : 5; // doigts ≤ seuil sont BAS
+
+  // SVG dimensions
+  const W = 130, H = 170;
+  // Paume : rectangle vertical au centre
+  const palmW = 34, palmH = 90;
+  const palmX = side === 'left' ? W - palmW - 10 : 10; // paume à droite pour main G (pouce côté centre)
+  const palmY = 38;
+
+  // Longueurs des doigts (pouce plus court, majeur le plus long)
+  const fingerLengths = { 10: 32, 9: 48, 8: 52, 7: 46, 6: 36 };
+  const fingerW = 13; // épaisseur doigt
+  const fingerSpacing = palmH / 5; // espace vertical entre doigts
+
+  let svg = '';
+
+  // Paume
+  svg += `<rect x="${palmX}" y="${palmY}" width="${palmW}" height="${palmH}" rx="10"
+    fill="#FFCC80" stroke="#1a1a2e" stroke-width="2.5"/>`;
+
+  fingerOrder.forEach((num, i) => {
+    const isDown = num <= downThreshold;
+    const isBent = num === downThreshold;
+
+    let fillColor = '#FFCC80';
+    if (highlightDown && isDown) fillColor = '#FF8A80';
+    if (highlightUp && !isDown) fillColor = '#A5D6A7';
+
+    const baseLen = fingerLengths[num];
+    const fLen = isDown ? Math.round(baseLen * 0.45) : baseLen; // replié = très court
+
+    // Position verticale du doigt (depuis paume)
+    const fy = palmY + i * (palmH / 5) + 6;
+
+    let fx, fWidth;
+    if (side === 'left') {
+      // Main gauche : doigts partent vers la gauche depuis le bord gauche de la paume
+      fx = palmX - fLen;
+      fWidth = fLen;
+    } else {
+      // Main droite : doigts partent vers la droite depuis le bord droit de la paume
+      fx = palmX + palmW;
+      fWidth = fLen;
+    }
+
+    // Doigt replié : légèrement incliné vers la paume
+    let transform = '';
+    if (isBent) {
+      const cx = side === 'left' ? palmX : palmX + palmW;
+      const cy = fy + fingerW / 2;
+      transform = `transform="rotate(${side === 'left' ? 15 : -15},${cx},${cy})"`;
+    }
+
+    svg += `<rect x="${fx}" y="${fy}" width="${fWidth}" height="${fingerW}" rx="7"
+      fill="${fillColor}" stroke="#1a1a2e" stroke-width="2" ${transform}/>`;
+
+    // Label du numéro
+    const labelX = side === 'left'
+      ? palmX - baseLen - 4
+      : palmX + palmW + baseLen + 4;
+    const labelAnchor = side === 'left' ? 'end' : 'start';
+    const labelColor = isDown ? '#c62828' : '#2e7d32';
+
+    svg += `<text x="${labelX}" y="${fy + fingerW - 1}" text-anchor="${labelAnchor}"
+      font-family="Nunito,sans-serif" font-size="13" font-weight="900"
+      fill="${labelColor}">${num}</text>`;
+  });
+
+  // Poignet
+  const wristX = palmX;
+  const wristY = palmY + palmH;
+  svg += `<rect x="${wristX}" y="${wristY}" width="${palmW}" height="20" rx="6"
+    fill="#F0B070" stroke="#1a1a2e" stroke-width="2"/>`;
+
+  // Flèche indiquant le sens (auriculaire vers le bas)
+  const arrowX = side === 'left' ? 8 : W - 8;
+  svg += `<line x1="${arrowX}" y1="${palmY + palmH - 10}" x2="${arrowX}" y2="${palmY + palmH + 30}"
+    stroke="#1a1a2e" stroke-width="2.5" marker-end="url(#arr)"/>`;
+
+  return `<svg class="hand-svg" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+        <path d="M0,0 L8,4 L0,8 Z" fill="#1a1a2e"/>
+      </marker>
+    </defs>
+    ${svg}
+  </svg>`;
+}
+
+
+// ============================================================
+//  QUIZ ENGINE
+// ============================================================
+// Build all 25 combinations
+const allPairs = [];
+for (let a = 6; a <= 10; a++) {
+  for (let b = a; b <= 10; b++) {
+    allPairs.push([a, b]);
+  }
+}
+
+let quizQueue = [];
+let currentQ = 0;
+let score = 0;
+let wrongAnswers = [];
+let timerInterval = null;
+let timeLeft = 15;
+let answered = false;
+
+const quizMessages = {
+  correct: [
+    ["🔥", "INCROYABLE !", "#FF6B35"],
+    ["⚡", "PARFAIT !", "#FFD700"],
+    ["🎉", "CHAMPION !", "#00C851"],
+    ["🌟", "BRILLANT !", "#9B30FF"],
+    ["💥", "EXPLOSIF !", "#1A6EFF"],
+  ],
+  wrong: [
+    ["😅", "PRESQUE !", "#FF8C00"],
+    ["🤔", "PAS GRAVE !", "#1A6EFF"],
+    ["💪", "ESSAIE ENCORE !", "#9B30FF"],
+  ]
+};
+
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function getWrongAnswers(correct, count) {
+  const all = new Set();
+  while (all.size < count) {
+    const offset = Math.floor(Math.random() * 20) - 10;
+    if (offset !== 0) {
+      const val = correct + offset;
+      if (val >= 30 && val <= 110 && val !== correct) all.add(val);
+    }
+  }
+  return [...all];
+}
+
+function initQuiz() {
+  quizQueue = shuffleArray([...allPairs]);
+  currentQ = 0;
+  score = 0;
+  wrongAnswers = [];
+  loadQuestion();
+}
+
+function loadQuestion() {
+  if (currentQ >= quizQueue.length) {
+    showResults();
+    return;
+  }
+  answered = false;
+  const [a, b] = quizQueue[currentQ];
+  const correct = a * b;
+
+  // Update UI
+  document.getElementById('quizProgress').textContent = `Question ${currentQ + 1} / ${quizQueue.length}`;
+  document.getElementById('progressFill').style.width = `${(currentQ / quizQueue.length) * 100}%`;
+  document.getElementById('quizQuestion').textContent = `${a} × ${b}`;
+
+  // Fingers hint
+  const downA = a - 5, downB = b - 5;
+  const upA2 = 10 - a, upB2 = 10 - b;
+  document.getElementById('fingersHint').textContent =
+    `🤚 Main G: plie ${a} + vers auriculaire (${downA} bas, ${upA2} levés)  |  Main D: plie ${b} + vers auriculaire (${downB} bas, ${upB2} levés)`;
+
+  // Quiz bubble rotator
+  const bubbles = [
+    `Allez, <strong>${a} × ${b}</strong> ! T'as 15 secondes ! ⏱️`,
+    `<strong>${a} fois ${b}</strong>... utilise tes doigts ! 🤚`,
+    `Montre-moi ce que tu vaux, Dresseur ! <strong>${a} × ${b}</strong> 💪`,
+    `Facile pour un champion ! <strong>${a} × ${b}</strong> = ? ⚡`,
+  ];
+  document.getElementById('quizBubble').innerHTML = bubbles[currentQ % bubbles.length];
+
+  // Generate answers
+  const wrongs = getWrongAnswers(correct, 3);
+  const options = shuffleArray([correct, ...wrongs]);
+
+  const grid = document.getElementById('answerGrid');
+  grid.innerHTML = '';
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'answer-btn';
+    btn.textContent = opt;
+    btn.onclick = () => handleAnswer(opt, correct, a, b);
+    grid.appendChild(btn);
+  });
+
+  // Timer
+  startTimer(correct, a, b);
+}
+
+function startTimer(correct, a, b) {
+  clearInterval(timerInterval);
+  timeLeft = 10;
+  const circle = document.getElementById('timerCircle');
+  const timerText = document.getElementById('timerText');
+  const circumference = 283;
+
+  circle.style.stroke = 'var(--orange)';
+  circle.style.transition = 'none';
+  circle.style.strokeDashoffset = '0';
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    timerText.textContent = timeLeft;
+    const offset = circumference * (1 - timeLeft / 10);
+    circle.style.strokeDashoffset = offset;
+
+    if (timeLeft <= 3) circle.style.stroke = 'var(--red)';
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      if (!answered) {
+        handleAnswer(null, correct, a, b);
+      }
+    }
+  }, 1000);
+}
+
+function handleAnswer(chosen, correct, a, b) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+
+  const btns = document.querySelectorAll('.answer-btn');
+  btns.forEach(btn => {
+    btn.disabled = true;
+    if (parseInt(btn.textContent) === correct) btn.classList.add('correct');
+    else if (parseInt(btn.textContent) === chosen) btn.classList.add('wrong');
+  });
+
+  if (chosen === correct) {
+    score++;
+    showFeedback(true, correct);
+    spawnConfetti(8);
+    spawnFloatStars();
+  } else {
+    wrongAnswers.push({ a, b, correct, chosen });
+    showFeedback(false, correct);
+  }
+
+  setTimeout(() => {
+    hideFeedback();
+    currentQ++;
+    loadQuestion();
+  }, 1800);
+}
+
+function showFeedback(correct, answer) {
+  const overlay = document.getElementById('feedbackOverlay');
+  const msgs = correct ? quizMessages.correct : quizMessages.wrong;
+  const [emoji, text, color] = msgs[Math.floor(Math.random() * msgs.length)];
+  document.getElementById('feedbackEmoji').textContent = emoji;
+  document.getElementById('feedbackText').textContent = correct ? text : `${text} C'était ${answer} !`;
+  document.getElementById('feedbackText').style.color = color || 'white';
+  overlay.style.background = correct ? 'rgba(0,200,81,0.15)' : 'rgba(255,60,60,0.12)';
+  overlay.classList.add('show');
+}
+function hideFeedback() {
+  document.getElementById('feedbackOverlay').classList.remove('show');
+}
+
+function showResults() {
+  const pct = score / quizQueue.length;
+  let emoji, title, msg, stars;
+  if (pct >= 0.9) {
+    emoji = '🏆'; title = 'MAÎTRE DES TABLES !'; msg = 'Tu es un vrai champion des maths ! Continue comme ça !'; stars = 5;
+  } else if (pct >= 0.7) {
+    emoji = '🎉'; title = 'SUPER TRAVAIL !'; msg = 'Excellent résultat ! Encore un peu de pratique et tu seras imbattable !'; stars = 4;
+  } else if (pct >= 0.5) {
+    emoji = '💪'; title = 'BIEN JOUÉ !'; msg = 'Tu progresses bien ! Revois la méthode et réessaie !'; stars = 3;
+  } else {
+    emoji = '📚'; title = 'CONTINUE !'; msg = 'La méthode des doigts va t\'aider. Relis la leçon et reviens dans l'arène!'; stars = 2;
+  }
+
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultScore').textContent = `${score} / ${quizQueue.length}`;
+  document.getElementById('resultMsg').textContent = msg;
+
+  const starsEl = document.getElementById('resultStars');
+  starsEl.innerHTML = '';
+  for (let i = 0; i < 5; i++) {
+    const s = document.createElement('span');
+    s.textContent = i < stars ? '⭐' : '☆';
+    s.style.animationDelay = `${i * 0.1}s`;
+    starsEl.appendChild(s);
+  }
+
+  const wrongEl = document.getElementById('wrongAnswersList');
+  if (wrongAnswers.length > 0) {
+    wrongEl.innerHTML = `<div style="font-family:'Bangers',cursive;color:var(--red);margin-bottom:8px;font-size:1.1rem;">À RETRAVAILLER :</div>` +
+      wrongAnswers.map(w => `<div style="padding:4px 0;border-bottom:1px solid #eee">
+        ❌ ${w.a} × ${w.b} = <strong>${w.correct}</strong> ${w.chosen ? `(tu as dit ${w.chosen})` : '(temps dépassé)'}
+      </div>`).join('');
+  } else {
+    wrongEl.innerHTML = `<div style="text-align:center;color:var(--green);font-size:1.1rem;font-weight:800;">🌟 Aucune erreur ! Parfait ! 🌟</div>`;
+  }
+
+  showScreen('screenResults');
+  if (pct >= 0.9) spawnConfetti(30);
+}
+
+function restartQuiz() {
+  showScreen('screenQuiz');
+  initQuiz();
+}
+
+// ============================================================
+//  CONFETTI & FX
+// ============================================================
+function spawnConfetti(count) {
+  const wrap = document.getElementById('confettiWrap');
+  const colors = ['#FFE000', '#FF3B3B', '#1A6EFF', '#00C851', '#FF8C00', '#9B30FF', '#ff69b4'];
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.background = colors[Math.floor(Math.random() * colors.length)];
+      el.style.animationDuration = (0.8 + Math.random() * 0.8) + 's';
+      el.style.animationDelay = (Math.random() * 0.3) + 's';
+      el.style.transform = `rotate(${Math.random()*360}deg)`;
+      wrap.appendChild(el);
+      setTimeout(() => el.remove(), 2000);
+    }, i * 60);
+  }
+}
+
+function spawnFloatStars() {
+  const stars = ['⭐', '✨', '🌟', '💫'];
+  for (let i = 0; i < 4; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'float-star';
+      el.textContent = stars[Math.floor(Math.random() * stars.length)];
+      el.style.left = (20 + Math.random() * 60) + 'vw';
+      el.style.top = (40 + Math.random() * 30) + 'vh';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1000);
+    }, i * 150);
+  }
+}
+
+// ============================================================
+//  TYPING EFFECT
+// ============================================================
+let typingTimer = null;
+function typeText(elId, html) {
+  const el = document.getElementById(elId);
+  el.innerHTML = html; // instant for lesson (already formatted)
+}
+
+// ============================================================
+//  SCREEN NAVIGATION
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+
+  if (id === 'screenLesson') {
+    currentStep = 0;
+    updateLesson();
+  }
+  if (id === 'screenQuiz') {
+    initQuiz();
+  }
+}
+
+// ============================================================
+//  INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  // Nothing to do on intro
+});
+</script>
+</body>
+</html>
